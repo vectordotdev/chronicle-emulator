@@ -9,7 +9,7 @@ pub static DATA: Lazy<Mutex<Vec<Log>>> = Lazy::new(|| Mutex::new(vec![]));
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct Log {
     customer_id: String,
-    log_type: String,
+    pub log_type: String,
     log_text: String,
     ts_rfc3339: String,
 }

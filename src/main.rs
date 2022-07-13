@@ -1,6 +1,6 @@
 use axum::{
     async_trait,
-    extract::{FromRequest, RequestParts, TypedHeader},
+    extract::{FromRequest, Query, RequestParts, TypedHeader},
     http::StatusCode,
     response::IntoResponse,
     routing::{get, post},
@@ -11,7 +11,7 @@ use clap::Parser;
 use headers::{authorization::Bearer, Authorization};
 use indoc::indoc;
 use jsonwebtoken::{decode, Algorithm, DecodingKey, Validation};
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 
 mod auth;
 mod data;
@@ -44,12 +44,23 @@ async fn log_types() -> &'static str {
     )
 }
 
+#[derive(Deserialize)]
+struct LogType {
+    log_type: String
+}
+
 /// Handler to return the posted logs.
 /// This isn't a part of the chronicle API, but is useful for tests
 /// to be able to retrieve what has been posted.
-async fn logs() -> Json<Vec<data::Log>> {
+async fn logs(log_type: Query<LogType>) -> Json<Vec<data::Log>> {
     let data = data::DATA.lock().unwrap();
-    Json(data.to_vec())
+    let logs = data
+        .iter()
+        .filter(|log| log.log_type == log_type.0.log_type)
+        .cloned()
+        .collect();
+
+    Json(logs)
 }
 
 /// Handler that posts a set of unstructured log entries.
