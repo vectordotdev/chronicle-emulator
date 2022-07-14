@@ -46,7 +46,7 @@ async fn log_types() -> &'static str {
 
 #[derive(Deserialize)]
 struct LogType {
-    log_type: String
+    log_type: Option<String>,
 }
 
 /// Handler to return the posted logs.
@@ -54,11 +54,14 @@ struct LogType {
 /// to be able to retrieve what has been posted.
 async fn logs(log_type: Query<LogType>) -> Json<Vec<data::Log>> {
     let data = data::DATA.lock().unwrap();
-    let logs = data
-        .iter()
-        .filter(|log| log.log_type == log_type.0.log_type)
-        .cloned()
-        .collect();
+    let logs = match log_type.0.log_type {
+        Some(log_type) => data
+            .iter()
+            .filter(|log| log.log_type == log_type)
+            .cloned()
+            .collect(),
+        None => data.to_vec(),
+    };
 
     Json(logs)
 }
