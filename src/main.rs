@@ -67,12 +67,18 @@ async fn logs(log_type: Query<LogType>) -> Json<Vec<data::Log>> {
 }
 
 /// Handler that posts a set of unstructured log entries.
+/// To test invalid entries, if a `log_type` of "INVALID" is passed
+/// the handler will return a 400 BAD_REQUEST response.
 async fn create_unstructured(
     Json(payload): Json<data::UnstructuredLogs>,
     _user: User,
 ) -> impl IntoResponse {
-    data::add_to_data(payload);
-    (StatusCode::CREATED, Json(true))
+    if payload.log_type == "INVALID" {
+        (StatusCode::BAD_REQUEST, Json(false))
+    } else {
+        data::add_to_data(payload);
+        (StatusCode::CREATED, Json(true))
+    }
 }
 
 #[derive(Debug, Serialize)]

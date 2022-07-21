@@ -17,7 +17,7 @@ pub struct Log {
 #[derive(Debug, Deserialize, Serialize)]
 pub struct UnstructuredLogs {
     customer_id: String,
-    log_type: String,
+    pub log_type: String,
     entries: Vec<UnstructuredLog>,
 }
 

@@ -22,7 +22,10 @@ impl From<Error> for ApiError {
             Error::WrongCredentials => StatusCode::UNAUTHORIZED,
             _ => StatusCode::INTERNAL_SERVER_ERROR,
         };
-        let payload = json!({"message": err.to_string()});
+        let payload = json!({
+            "error": err.to_string(),
+            "error_description": err.to_string(),
+        });
         (status, Json(payload))
     }
 }
