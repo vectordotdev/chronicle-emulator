@@ -156,18 +156,17 @@ struct Args {
 async fn main() {
     let args = Args::parse();
     let public_key = std::fs::read_to_string(args.public_key).unwrap();
-
-    // build our application with a single route
     let app = Router::new()
-        // Fetch the log types
+        // Fetch the log types.
         .route("/v2/logtypes", get(log_types))
-        // Token
+        // Fetch a token.
         .route("/token", post(|body| token(public_key, body)))
-        // Post a log entry
+        // Post a log entry.
         .route(
             "/v2/unstructuredlogentries:batchCreate",
             post(create_unstructured),
         )
+        // Query the posted logs.
         .route("/logs", get(logs));
 
     // run it with hyper on localhost:3000
