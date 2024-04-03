@@ -12,12 +12,14 @@ pub struct Log {
     pub log_type: String,
     log_text: String,
     ts_rfc3339: String,
+    namespace: Option<String>,
 }
 
 #[derive(Debug, Deserialize, Serialize)]
 pub struct UnstructuredLogs {
     customer_id: String,
     pub log_type: String,
+    namespace: Option<String>,
     entries: Vec<UnstructuredLog>,
 }
 
@@ -43,6 +45,7 @@ impl From<UnstructuredLogs> for Vec<Log> {
                         .unwrap_or_else(Utc::now)
                         .to_rfc3339()
                 }),
+                namespace: logs.namespace.clone()
             })
             .collect()
     }
